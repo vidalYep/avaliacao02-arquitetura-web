@@ -1,0 +1,8 @@
+com\example\teste\service\JwtService.class
+com\example\teste\controller\AuthController.class
+com\example\teste\TesteApplication.class
+com\example\teste\controller\TestProtectedController.class
+com\example\teste\repository\UserRepository.class
+com\example\teste\service\AuthService.class
+com\example\teste\config\SecurityConfig.class
+com\example\teste\model\User.class
