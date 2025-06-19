@@ -1,8 +1,10 @@
 package com.example.teste.service;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +21,16 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long expirationTime;
 
+    private Algorithm getSigningAlgorithm() {
+        return Algorithm.HMAC256(secretKey);
+    }
+
+    private JWTVerifier getVerifier() {
+        return JWT.require(getSigningAlgorithm()).build();
+    }
+
     /**
-     * Gera um token JWT com base nas informações do usuário.
-     * @param username O nome de usuário (será o 'subject' do token).
-     * @param role A role (perfil) do usuário (adicionada como 'claim').
-     * @return O token JWT assinado.
+     * Gera um token JWT com subject e claims.
      */
     public String generateToken(String username, String role) {
         return JWT.create()
@@ -31,17 +38,15 @@ public class JwtService {
                 .withClaim("role", role)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-                .sign(Algorithm.HMAC256(secretKey)); // Assina com HMAC256 e sua chave secreta
+                .sign(getSigningAlgorithm());
     }
 
     /**
-     * Valida um token JWT.
-     * @param token O token JWT a ser validado.
-     * @return true se o token for válido e não expirado, false caso contrário.
+     * Valida o token com base na assinatura e expiração.
      */
     public boolean validateToken(String token) {
         try {
-            JWT.require(Algorithm.HMAC256(secretKey)).build().verify(token);
+            getVerifier().verify(token);
             return true;
         } catch (JWTVerificationException e) {
             System.err.println("Erro na validação do token: " + e.getMessage());
@@ -50,22 +55,37 @@ public class JwtService {
     }
 
     /**
-     * Extrai o nome de usuário (subject) de um token JWT.
-     * @param token O token JWT.
-     * @return O username.
+     * Extrai o username (subject) do token.
      */
     public String getUsernameFromToken(String token) {
-        return JWT.decode(token).getSubject();
+        try {
+            return getVerifier().verify(token).getSubject();
+        } catch (JWTVerificationException e) {
+            return null;
+        }
     }
 
     /**
-     * Extrai todas as claims de um token JWT.
-     * @param token O token JWT.
-     * @return Um mapa com as claims do token.
+     * Extrai todas as claims do token como Map.
      */
     public Map<String, Object> getAllClaimsFromToken(String token) {
-        return JWT.decode(token).getClaims().entrySet().stream()
-                   .collect(HashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue().asString()), HashMap::putAll);
+        try {
+            DecodedJWT jwt = getVerifier().verify(token);
+            return jwt.getClaims().entrySet().stream()
+                    .collect(HashMap::new, (map, entry) -> map.put(entry.getKey(), entry.getValue().as(Object.class)), HashMap::putAll);
+        } catch (JWTVerificationException e) {
+            return new HashMap<>();
+        }
     }
-    
+
+    /**
+     * (Opcional) Extrai a role do token JWT.
+     */
+    public String getRoleFromToken(String token) {
+        try {
+            return getVerifier().verify(token).getClaim("role").asString();
+        } catch (JWTVerificationException e) {
+            return null;
+        }
+    }
 }

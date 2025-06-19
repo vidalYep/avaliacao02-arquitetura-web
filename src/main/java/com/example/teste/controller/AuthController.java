@@ -5,10 +5,8 @@ import com.example.teste.service.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,9 +14,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Autenticação", description = "Endpoints para login e geração/validação de tokens JWT")
+@Tag(name = "Autenticação", description = "Endpoints para login, registro e validação de tokens JWT")
 public class AuthController {
-    
+
     private final AuthService authService;
     private final JwtService jwtService;
 
@@ -57,5 +55,24 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido ou expirado.");
         }
     }
-    
+
+    @Operation(summary = "Registra um novo usuário no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Usuário já existe"),
+        @ApiResponse(responseCode = "500", description = "Erro interno ao registrar o usuário")
+    })
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestParam String username, @RequestParam String password) {
+        try {
+            boolean success = authService.registerUser(username, password);
+            if (success) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Usuário registrado com sucesso.");
+            } else {
+                return ResponseEntity.badRequest().body("Usuário já existe.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar usuário.");
+        }
+    }
 }

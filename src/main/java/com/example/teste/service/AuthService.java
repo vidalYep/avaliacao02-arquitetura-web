@@ -10,10 +10,10 @@ import java.util.Optional;
 
 @Service
 public class AuthService {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService; // Injeta o serviço de JWT
+    private final JwtService jwtService;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
@@ -23,10 +23,6 @@ public class AuthService {
 
     /**
      * Autentica um usuário e, se bem-sucedido, gera e retorna um token JWT.
-     * @param username Nome de usuário.
-     * @param password Senha em texto claro.
-     * @return O token JWT.
-     * @throws BadCredentialsException Se as credenciais forem inválidas.
      */
     public String authenticateUserAndGenerateToken(String username, String password) {
         Optional<User> userOptional = userRepository.findByUsername(username);
@@ -42,5 +38,22 @@ public class AuthService {
         }
 
         return jwtService.generateToken(user.getUsername(), user.getRole());
+    }
+
+    /**
+     * Registra um novo usuário com username e senha criptografada.
+     */
+    public boolean registerUser(String username, String password) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            return false; // Usuário já existe
+        }
+
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setRole("USER"); // Role padrão
+
+        userRepository.save(newUser);
+        return true;
     }
 }
