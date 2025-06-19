@@ -67,6 +67,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll() // Console H2
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Documentação Swagger
                 .requestMatchers("/auth/register").permitAll() // Permite registro público
+                .requestMatchers("/actuator/**").permitAll() // 👈 Adicione esta linha
                 .anyRequest().authenticated() // Qualquer outra requisição exige um JWT válido
             )
             .headers(headers -> headers.frameOptions(frameOptions -> headers.frameOptions().sameOrigin())) // Necessário para o H2 console
