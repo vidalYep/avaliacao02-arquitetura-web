@@ -65,7 +65,7 @@ A aplicação implementa as melhores práticas de:
 ## 📚 Documentação da API
 
 A documentação interativa está disponível em:
-http://localhost:8080/swagger-ui/index.html
+[https://avaliacao02-arquitetura-web.onrender.com/swagger-ui/index.html](https://avaliacao02-arquitetura-web.onrender.com/swagger-ui/index.html)
 
 Lá você pode testar os endpoints e ver descrições detalhadas de cada um.
 
@@ -100,10 +100,9 @@ Inclui roteiro básico para simular múltiplos usuários realizando login para a
 
 ## Acesse
 
-- API em: [http://localhost:8080](http://localhost:8080)  
-- H2 Console em: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)  
-- Swagger UI em: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
-- Hospedagem Render em : [https://avaliacao02-arquitetura-web.onrender.com](https://avaliacao02-arquitetura-web.onrender.com)
+- API em: [https://avaliacao02-arquitetura-web.onrender.com](https://avaliacao02-arquitetura-web.onrender.com)
+- H2 Console em: [https://avaliacao02-arquitetura-web.onrender.com/h2-console/](https://avaliacao02-arquitetura-web.onrender.com/h2-console/)
+- Swagger UI em: [https://avaliacao02-arquitetura-web.onrender.com/swagger-ui/index.html](https://avaliacao02-arquitetura-web.onrender.com/swagger-ui/index.html)
 ---
 
 ## Usuários padrões criados no startup
